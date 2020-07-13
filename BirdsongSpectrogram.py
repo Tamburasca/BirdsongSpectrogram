@@ -13,7 +13,7 @@ Fast MATPLOTLIB plotting was deployed by utilizing blitting (no mem leaks observ
 enough room for making it even near-live. If the upper subplot was not to be updated, one could reach update times of
 0.18 sec (>5 fps)
 
-The plot comprises of two subplots, the upper displaying the streaming audio signal, whilst the lower displays the
+The plot comprises two subplots, the upper displaying the streaming audio signal, whilst the lower displays the
 birdsong spectrogram between frequencies from 0 to RATE/2 Hz.
 
 Runs with
