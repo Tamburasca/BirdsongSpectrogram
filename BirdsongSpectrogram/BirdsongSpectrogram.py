@@ -1,13 +1,13 @@
 #!/usr/bin/env python
 
 """
-Birdsong Spectrogram derived from the computer's internal microphone audio signal. The spectrogram is being
-updated as the audio signal is streaming in. The spectrogram's update interval can be adjusted by the page up/down keys.
-However, the lower limit is determined by the time needed for matplotlib to update the spectrogram (between 0.3 and
-0.5 sec). The hotkeys 'c' and 'y' stop and exit the program, respectively. 'ESC' to resume. The sample rate RATE
-(samples/sec), the sample width M (no of samples of each slice) for the FFT, and the overlap of the slices STEP with
-each other (no of samples) can be adjusted accordingly. The audio signal is being apodized through a Hanning window
-before running the FFT.
+Birdsong Spectrogram as derived from the computer's internal microphone audio signal. The spectrogram is being
+updated as the audio signal is streaming in. The spectrogram's update interval can be adjusted by hotkeys ctrl-j and
+ctrl-k. However, the lower limit is determined by the time needed for MATPLOTLIB to update the spectrogram
+(between 0.3 and 0.5 sec). 'ctrl-x' and 'ctrl-y' stop and exit the program, respectively. 'ESC' to resume. The sample
+rate RATE (samples/sec), the sample width M (no of samples of each slice) for the FFT, and the overlap of the slices
+STEP with each other (no of samples) can be adjusted accordingly. The audio signal is being apodized through a
+Hanning window before running the FFT.
 
 Fast MATPLOTLIB plotting was deployed by utilizing blitting (no mem leaks observed here). There's - I am pretty sure -
 enough room for making it even near-live. If the upper subplot was not to be updated, one could reach update times of
@@ -32,7 +32,7 @@ __license__ = "GPLv3"
 __version__ = "0.1"
 __maintainer__ = "Dr. Ralf A. Timmermann"
 __email__ = "rtimmermann@astro.uni-bonn.de"
-__status__ = "Development"
+__status__ = "Production"
 
 import pyaudio
 import numpy as np
@@ -58,7 +58,7 @@ WIDTH = 5
 _debug = False
 
 
-class TunerHarpsichord:
+class Birdsong:
 
     def __init__(self):
         """
@@ -112,7 +112,7 @@ class TunerHarpsichord:
         amp = []
         while self.stream.is_active():
             # interrupt on hotkey
-            if self.rc == 'c':
+            if self.rc == 'x':
                 self.stream.stop_stream()
                 keyboard.wait('esc')
                 self.stream.start_stream()
@@ -223,33 +223,31 @@ class TunerHarpsichord:
         :return:
             None
         """
-        if key == 'c':
+        if key == 'x':
             print("continue with ESC")
-            self.rc = 'c'
+            self.rc = 'x'
         elif key == 'y':
             self.stream.stop_stream()
             print("quitting...")
             self.rc = 'y'
-        elif key == 'j':
+        elif key == 'k':
             self.record_seconds += 0.1
             print("Recording Time: {0:1.1f}s".format(self.record_seconds))
-        elif key == 'k':
-                self.record_seconds -= 0.1
-                if self.record_seconds >= 0:
-                    print("Recording Time: {0:1.1f}s".format(self.record_seconds))
-                else:
-                    print("Recording Time cannot be smaller than zero!".format(self.record_seconds))
-                    self.record_seconds = 0
+        elif key == 'j':
+            self.record_seconds -= 0.1
+            if self.record_seconds < 0:
+                self.record_seconds = 0
+            print("Recording Time: {0:1.1f}s".format(self.record_seconds))
 
         return None
 
 
-if __name__ == "__main__":
-    a = TunerHarpsichord()
-    keyboard.add_hotkey('c', a.on_press, args='c')
-    keyboard.add_hotkey('y', a.on_press, args='y')
-    keyboard.add_hotkey('page up', a.on_press, args='j')
-    keyboard.add_hotkey('page down', a.on_press, args='k')
-
+#if __name__ == "__main__":
+def main():
+    a = Birdsong()
+    keyboard.add_hotkey('ctrl+x', a.on_press, args='x')
+    keyboard.add_hotkey('ctrl+y', a.on_press, args='y')
+    keyboard.add_hotkey('ctrl+j', a.on_press, args='j')
+    keyboard.add_hotkey('ctrl+k', a.on_press, args='k')
     a.animate
     plt.close('all')
