@@ -4,8 +4,8 @@ with open("README.md", "r") as fh:
     long_description = fh.read()
 
 setuptools.setup(
-    name="example-pkg-Tamburasca", # Replace with your own username
-    version="0.0.1",
+    name="BirdsongSpectrogram",
+    version="0.1",
     author="Ralf Antonius Timmermann",
     author_email="rtimmermann@astro.uni-bonn.de",
     description="Birdsong Spectrogramm",
