@@ -134,7 +134,8 @@ class Birdsong:
             self.callback_output = []
             amp = np.hstack((amp, chunk))
             samples = len(amp)
-            #print('Number of samples', samples)
+            if _debug:
+                print('Number of samples', samples)
             rest = samples - WIDTH*RATE
             if rest > 0:
                 # cut off preceeding rest to result in 5 second windows
@@ -145,7 +146,6 @@ class Birdsong:
             slices = util.view_as_windows(amp, window_shape=(M,), step=STEP)
             print(f'Audio shape: {amp.shape}, Sliced audio shape: {slices.shape}')
             t = np.arange(samples) / RATE
-            #print(f'Audio length: {L:.2f} seconds')
 
             # Hanning apodization
             slices = slices * win
