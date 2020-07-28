@@ -7,7 +7,7 @@ All that's required is a quality inboard-microphone configured to at least 44100
 On UNIX OS please consider to run the package with sudo rights, owing to the particular requirement of the module 
 keyboard: sudo python3 -m BirdsongSpectrogram
 
-You may wan to test and enjoy it with https://www.youtube.com/watch?v=NK2_bcQcoD4
+You may wan to test and enjoy it with [link to youtube!](https://www.youtube.com/watch?v=NK2_bcQcoD4)
 
 It'll look like this:
 ![image info](./pictures/BirdsongSpectrogram.png)
