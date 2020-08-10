@@ -1,28 +1,30 @@
 #!/usr/bin/env python
 
 """
-Birdsong Spectrogram as derived from the computer's internal microphone audio signal. The spectrogram is being
-updated as the audio signal is streaming in. The spectrogram's update interval can be adjusted by hotkeys ctrl-j and
-ctrl-k. However, the lower limit is determined by the time needed for MATPLOTLIB to update the spectrogram
-(between 0.3 and 0.5 sec). 'ctrl-x' and 'ctrl-y' stop and exit the program, respectively. 'ESC' to resume. The sample
-rate RATE (samples/sec), the sample width M (no of samples of each slice) for the FFT, and the overlap of the slices
-STEP with each other (no of samples) can be adjusted accordingly. The audio signal is being apodized through a
-Hanning window before running the FFT.
+BirdsongSpectrogram Copyright (C) 2020 Dr. Ralf Antonius Timmermann
 
-Fast MATPLOTLIB plotting was deployed by utilizing blitting (no mem leaks observed here). There's - I am pretty sure -
-enough room for making it even near-live. If the upper subplot was not to be updated, one could reach update times of
-0.18 sec (>5 fps)
+Birdsong Spectrogram as derived from the audio signal. The spectrogram is being
+updated as the audio signal is streaming in. The spectrogram's update interval
+can be adjusted by hotkeys ctrl-j and ctrl-k. However, the lower limit
+is determined by the time needed for MATPLOTLIB to update the spectrogram
+(between 0.3 and 0.5 sec). 'ctrl-x' and 'ctrl-y' stop and exit the program,
+respectively. 'ESC' to resume. The sample rate, the sample width
+(no of samples of each slice) for the FFT, and the overlap of the slices
+with each other (no of samples) can be adjusted accordingly.
+The audio signal is being apodized through a Hanning window.
 
-The plot comprises two subplots, the upper displaying the streaming audio signal, whilst the lower displays the
-birdsong spectrogram between frequencies from 0 to RATE/2 Hz.
+Fast MATPLOTLIB plotting was deployed by utilizing blitting (no mem leaks
+observed here). There's - I am pretty sure - enough room for making it
+even near-live. If the upper subplot was not to be updated, one could reach
+update times of 0.18 sec (>5 fps)
 
-Runs with
-python       >=3.6
-keyboard     >=0.13.5
-PyAudio      >=0.2.11
-numpy        >=1.18.1
-matplotlib   >=3.2.1
-scikit-image >=0.17.2
+The plot comprises two subplots, the upper displaying the streaming
+audio signal, whilst the lower displays the birdsong spectrogram between
+frequencies from 0 to RATE/2 Hz.
+
+This program comes with ABSOLUTELY NO WARRANTY.
+This is free software, and you are welcome to redistribute it
+under certain conditions.
 """
 
 __author__ = "Dr. Ralf Antonius Timmermann"
@@ -33,11 +35,6 @@ __version__ = "0.1"
 __maintainer__ = "Dr. Ralf A. Timmermann"
 __email__ = "rtimmermann@astro.uni-bonn.de"
 __status__ = "Production"
-__doc__ = \
-"BirdsongSpectrogram Copyright (C) 2020 Dr. Ralf Antonius Timmermann\n\
-This program comes with ABSOLUTELY NO WARRANTY.\n\
-This is free software, and you are welcome to redistribute it\n\
-under certain conditions.\n"
 
 print (__doc__)
 
@@ -249,12 +246,15 @@ class Birdsong:
         return None
 
 
-#if __name__ == "__main__":
 def main():
+
     a = Birdsong()
     keyboard.add_hotkey('ctrl+x', a.on_press, args='x')
     keyboard.add_hotkey('ctrl+y', a.on_press, args='y')
     keyboard.add_hotkey('ctrl+j', a.on_press, args='j')
     keyboard.add_hotkey('ctrl+k', a.on_press, args='k')
+
     a.animate
     plt.close('all')
+
+    return 0
