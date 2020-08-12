@@ -17,7 +17,7 @@ audio signal, whilst the lower displays the birdsong spectrogram between
 frequencies from 0 to RATE/2 Hz.
 
 On UNIX OS please consider to run the package with sudo rights, owing to the particular requirement of the keyboard
-module: sudo python3 -m BirdsongSpectrogram
+module: <em>sudo python3 -m BirdsongSpectrogram</em>
 
 You may want to test and enjoy it with 
 [link to youtube!](https://www.youtube.com/watch?v=NK2_bcQcoD4)
