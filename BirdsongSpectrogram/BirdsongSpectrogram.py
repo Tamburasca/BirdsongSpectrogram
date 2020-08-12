@@ -7,15 +7,13 @@ Birdsong Spectrogram as derived from the audio signal. The spectrogram is being
 updated as the audio signal is streaming in. The spectrogram's update interval
 can be adjusted by hotkeys ctrl-j and ctrl-k. However, the lower limit
 is determined by the time needed for MATPLOTLIB to update the spectrogram
-(between 0.3 and 0.5 sec). 'ctrl-x' and 'ctrl-y' stop and exit the program,
-respectively. 'ESC' to resume. The sample rate, the sample width
+(between 0.3 and 0.5 sec). ctrl-x and ctrl-y stop and exit the program,
+respectively. ESC to resume. The sample rate, the sample width
 (no of samples of each slice) for the FFT, and the overlap of the slices
 with each other (no of samples) can be adjusted accordingly.
-The audio signal is being apodized through a Hanning window.
 
 Fast MATPLOTLIB plotting was deployed by utilizing blitting (no mem leaks
-observed here). There's - I am pretty sure - enough room for making it
-even near-live. If the upper subplot was not to be updated, one could reach
+observed here). If the upper subplot was not to be updated, one could reach
 update times of 0.18 sec (>5 fps)
 
 The plot comprises two subplots, the upper displaying the streaming
