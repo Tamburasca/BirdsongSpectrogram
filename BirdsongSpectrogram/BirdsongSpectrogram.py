@@ -98,7 +98,7 @@ class Birdsong:
     @property
     def animate(self):
         """
-        While the stream is active audio output is created and piled up on variable amp such that that WIDTH sec
+        While the stream is active audio output is created and piled up on variable amp such that WIDTH sec
         are filled. The upper subplot displays the audio signal, whilst the lower displays the birdsong spectrogram.
 
         :return:
@@ -148,6 +148,7 @@ class Birdsong:
             slices = util.view_as_windows(amp, window_shape=(M,), step=STEP)
             print(f'Audio shape: {amp.shape}, Sliced audio shape: {slices.shape}')
             t = np.arange(samples) / RATE
+            t = t - max(t)  # offset along x-axis
 
             # Hanning apodization
             slices = slices * win
@@ -171,14 +172,14 @@ class Birdsong:
                 ax1 = fig.add_subplot(212)
                 fig.set_size_inches(12, 8)
                 ln, = ax.plot(amp)
-                image = ax1.imshow(S, origin='lower', cmap='viridis', extent=(0, L, 0, RATE / 2 / 1000))
+                image = ax1.imshow(S, origin='lower', cmap='viridis', extent=(-L, 0., 0., RATE / 2. / 1000.))
                 # set once as do not change
                 # upper subplot
-                ax.set_xlim([0., WIDTH])
+                ax.set_xlim([-WIDTH, 0.])
                 ax.set_ylabel('Intensity/arb. units')
                 # lower subplot
                 ax1.set_aspect('auto')
-                ax1.set_xlim([0., WIDTH])
+                ax1.set_xlim([-WIDTH, 0])
                 ax1.set_xlabel('Time/s')
                 ax1.set_ylabel('Frequency/kHz')
                 axbackground = fig.canvas.copy_from_bbox(ax.bbox)
@@ -188,7 +189,7 @@ class Birdsong:
             ln.set_ydata(amp)
             # lower subplot
             image.set_data(S)
-            image.set_extent((0, L, 0, RATE / 2 / 1000))
+            image.set_extent((-L, 0., 0., RATE / 2. / 1000.))
             # Rescale the axis so that the data can be seen in the plot
             # if you know the bounds of your data you could just set this once
             # so that the axis don't keep changing
