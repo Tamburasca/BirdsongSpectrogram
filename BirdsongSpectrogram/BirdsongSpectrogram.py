@@ -112,6 +112,7 @@ class Birdsong:
         # start Recording
         self.stream.start_stream()
         amp = []
+
         while self.stream.is_active():
             # interrupt on hotkey
             if self.rc == 'x':
@@ -171,7 +172,7 @@ class Birdsong:
                 ax = fig.add_subplot(211)
                 ax1 = fig.add_subplot(212)
                 fig.set_size_inches(12, 8)
-                ln, = ax.plot(amp)
+                ln, = ax.plot(t, amp)
                 image = ax1.imshow(S, origin='lower', cmap='viridis', extent=(-L, 0., 0., RATE / 2. / 1000.))
                 # set once as do not change
                 # upper subplot
@@ -179,28 +180,32 @@ class Birdsong:
                 ax.set_ylabel('Intensity/arb. units')
                 # lower subplot
                 ax1.set_aspect('auto')
-                ax1.set_xlim([-WIDTH, 0])
+                ax1.set_xlim([-WIDTH, 0.])
                 ax1.set_xlabel('Time/s')
                 ax1.set_ylabel('Frequency/kHz')
                 axbackground = fig.canvas.copy_from_bbox(ax.bbox)
                 ax1background = fig.canvas.copy_from_bbox(ax1.bbox)
-            # upper subplot
-            ln.set_xdata(t)
-            ln.set_ydata(amp)
-            # lower subplot
-            image.set_data(S)
-            image.set_extent((-L, 0., 0., RATE / 2. / 1000.))
-            # Rescale the axis so that the data can be seen in the plot
-            # if you know the bounds of your data you could just set this once
-            # so that the axis don't keep changing
-            ax.relim()
-            ax.autoscale_view()
-            ax1.relim()
-            ax1.autoscale_view()
-            if _firstplot:
-                fig.canvas.draw()
+                """
+                see also here: https://bastibe.de/2013-05-30-speeding-up-matplotlib.html
+                no idea whether this poses still valid
+                """
+#                fig.canvas.draw()
+                plt.pause(0.001)
                 _firstplot = False
             else:
+                # upper subplot
+                ln.set_xdata(t)
+                ln.set_ydata(amp)
+                # lower subplot
+                image.set_data(S)
+                image.set_extent((-L, 0., 0., RATE / 2. / 1000.))
+                # Rescale the axis so that the data can be seen in the plot
+                # if you know the bounds of your data you could just set this once
+                # so that the axis don't keep changing
+                ax.relim()
+                ax.autoscale_view()
+                ax1.relim()
+                ax1.autoscale_view()
                 # restore background
                 fig.canvas.restore_region(axbackground)
                 fig.canvas.restore_region(ax1background)
