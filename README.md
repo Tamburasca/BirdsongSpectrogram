@@ -19,7 +19,7 @@ frequencies from 0 to RATE/2 Hz.
 On certain Linux distributions, a package named python-tk (or similar) needs 
 to be installed, when running in virtual environments.
 
-Run with <em>python3 -m BirdsongSpectrogram<em>
+Run with <em>python3 -m BirdsongSpectrogram</em>
 
 You may want to test current package and enjoy it when running with 
 [link to youtube!](https://www.youtube.com/watch?v=NK2_bcQcoD4)
