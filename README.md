@@ -16,10 +16,10 @@ The plot comprises two subplots, the upper displaying the streaming
 audio signal, whilst the lower displays the birdsong spectrogram between
 frequencies from 0 to RATE/2 Hz.
 
-On UNIX OS please consider to run the package with sudo rights, owing to the particular requirement of the keyboard
-module: <em>sudo python3 -m BirdsongSpectrogram</em>
+On certain Linux distributions, a package named python-tk (or similar) needs 
+to be installed, when running in virtual environments.
 
-You may want to test and enjoy it with 
+You may want to test current package and enjoy it when running with 
 [link to youtube!](https://www.youtube.com/watch?v=NK2_bcQcoD4)
 
 It'll look like this:

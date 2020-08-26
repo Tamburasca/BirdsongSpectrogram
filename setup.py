@@ -19,7 +19,7 @@ setuptools.setup(
         "Operating System :: OS Independent",
     ],
     python_requires='>=3.6',
-    install_requires=['keyboard     >=0.13.5',
+    install_requires=['pynput       >=1.6.8',
                       'PyAudio      >=0.2.11',
                       'numpy        >=1.18.1',
                       'matplotlib   >=3.2.1',

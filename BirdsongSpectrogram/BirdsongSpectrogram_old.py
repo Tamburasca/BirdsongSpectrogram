@@ -41,9 +41,8 @@ import numpy as np
 import matplotlib.pyplot as plt
 import timeit
 import time
-from pynput import keyboard
+import keyboard
 from skimage import util
-
 
 # do not modify below
 FORMAT = pyaudio.paInt16
@@ -96,27 +95,6 @@ class Birdsong:
 
         return None, pyaudio.paContinue
 
-    def on_activate_x(self):
-        print("continue with ESC")
-        self.rc = 'x'
-
-    def on_activate_y(self):
-        self.stream.stop_stream()
-        print("quitting...")
-
-    def on_activate_k(self):
-        self.record_seconds += 0.1
-        print("Recording Time: {0:1.1f}s".format(self.record_seconds))
-
-    def on_activate_j(self):
-        self.record_seconds -= 0.1
-        if self.record_seconds < 0:
-            self.record_seconds = 0
-        print("Recording Time: {0:1.1f}s".format(self.record_seconds))
-
-    def on_activate_esc(self):
-        self.rc = 'esc'
-
     @property
     def animate(self):
         """
@@ -136,13 +114,14 @@ class Birdsong:
         amp = []
 
         while self.stream.is_active():
-            # interrupt on hotkey 'ctrl-x' and resume on 'esc'
+            # interrupt on hotkey
             if self.rc == 'x':
                 self.stream.stop_stream()
-                while self.rc != 'esc':
-                    time.sleep(.01)
+                keyboard.wait('esc')
                 self.stream.start_stream()
                 self.rc = None
+            elif self.rc == 'y':
+                return 'y'
 
             print('Starting Audio Stream...')
             time.sleep(self.record_seconds)
@@ -208,7 +187,7 @@ class Birdsong:
                 ax1background = fig.canvas.copy_from_bbox(ax1.bbox)
                 """
                 see also here: https://bastibe.de/2013-05-30-speeding-up-matplotlib.html
-                no idea whether this poses still validity
+                no idea whether this poses still valid
                 """
 #                fig.canvas.draw()
                 plt.pause(0.001)
@@ -242,23 +221,44 @@ class Birdsong:
             if _debug:
                 print("time utilized for matplotlib [s]: " + str(_stop - _start))
 
-        return
+        return self.rc
+
+    def on_press(self, key):
+        """
+        interrupts on a key and set self.rc accordingly
+        :param key: string
+            interrupt key
+        :return:
+            None
+        """
+        if key == 'x':
+            print("continue with ESC")
+            self.rc = 'x'
+        elif key == 'y':
+            self.stream.stop_stream()
+            print("quitting...")
+            self.rc = 'y'
+        elif key == 'k':
+            self.record_seconds += 0.1
+            print("Recording Time: {0:1.1f}s".format(self.record_seconds))
+        elif key == 'j':
+            self.record_seconds -= 0.1
+            if self.record_seconds < 0:
+                self.record_seconds = 0
+            print("Recording Time: {0:1.1f}s".format(self.record_seconds))
+
+        return None
 
 
 def main():
 
     a = Birdsong()
-
-    h = keyboard.GlobalHotKeys({
-        '<ctrl>+x': a.on_activate_x,
-        '<ctrl>+y': a.on_activate_y,
-        '<ctrl>+j': a.on_activate_j,
-        '<ctrl>+k': a.on_activate_k,
-        '<esc>': a.on_activate_esc})
-    h.start()
+    keyboard.add_hotkey('ctrl+x', a.on_press, args='x')
+    keyboard.add_hotkey('ctrl+y', a.on_press, args='y')
+    keyboard.add_hotkey('ctrl+j', a.on_press, args='j')
+    keyboard.add_hotkey('ctrl+k', a.on_press, args='k')
 
     a.animate
-
     plt.close('all')
 
     return 0
