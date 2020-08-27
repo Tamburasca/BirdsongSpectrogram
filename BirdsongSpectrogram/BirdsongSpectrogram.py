@@ -29,7 +29,7 @@ __author__ = "Dr. Ralf Antonius Timmermann"
 __copyright__ = "Copyright (C) Dr. Ralf Antonius Timmermann"
 __credits__ = ""
 __license__ = "GPLv3"
-__version__ = "0.1"
+__version__ = "0.2"
 __maintainer__ = "Dr. Ralf A. Timmermann"
 __email__ = "rtimmermann@astro.uni-bonn.de"
 __status__ = "Production"
@@ -190,16 +190,16 @@ class Birdsong:
             if _firstplot:
                 # Setup figure, axis, lines, text and initiate plot and copy background
                 fig = plt.gcf()
-                ax = fig.add_subplot(211)
-                ax1 = fig.add_subplot(212)
                 fig.set_size_inches(12, 8)
+                # upper subplot
+                ax = fig.add_subplot(211)
+                # lower subplot
+                ax1 = fig.add_subplot(212)
                 ln, = ax.plot(t, amp)
                 image = ax1.imshow(S, origin='lower', cmap='viridis', extent=(-L, 0., 0., RATE / 2. / 1000.))
                 # set once as do not change
-                # upper subplot
                 ax.set_xlim([-WIDTH, 0.])
                 ax.set_ylabel('Intensity/arb. units')
-                # lower subplot
                 ax1.set_aspect('auto')
                 ax1.set_xlim([-WIDTH, 0.])
                 ax1.set_xlabel('Time/s')
@@ -248,7 +248,6 @@ class Birdsong:
 def main():
 
     a = Birdsong()
-
     h = keyboard.GlobalHotKeys({
         '<ctrl>+x': a.on_activate_x,
         '<ctrl>+y': a.on_activate_y,
@@ -256,9 +255,7 @@ def main():
         '<ctrl>+k': a.on_activate_k,
         '<esc>': a.on_activate_esc})
     h.start()
-
     a.animate
-
     plt.close('all')
 
     return 0
