@@ -19,8 +19,7 @@ spectrogram between frequencies from 0 to RATE/2 Hz.
 On certain Linux distributions, a package named python-tk (or similar) needs 
 to be installed, when running in virtual environments.
 
-Also note that the module pynput utilized here 
-may encounter 
+Also note that the module pynput utilized here may encounter 
 [plattform limitations](https://pynput.readthedocs.io/en/latest/limitations.html#)
 
 Run the program with: <em>python3 -m BirdsongSpectrogram</em>
