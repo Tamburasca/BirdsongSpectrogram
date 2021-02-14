@@ -24,6 +24,15 @@ This program comes with ABSOLUTELY NO WARRANTY.
 This is free software, and you are welcome to redistribute it
 under certain conditions.
 """
+import pyaudio
+import numpy as np
+import matplotlib.pyplot as plt
+import timeit
+import time
+from pynput import keyboard
+from skimage import util
+import logging
+
 
 __author__ = "Dr. Ralf Antonius Timmermann"
 __copyright__ = "Copyright (C) Dr. Ralf Antonius Timmermann"
@@ -34,15 +43,7 @@ __maintainer__ = "Dr. Ralf A. Timmermann"
 __email__ = "rtimmermann@astro.uni-bonn.de"
 __status__ = "Production"
 
-print (__doc__)
-
-import pyaudio
-import numpy as np
-import matplotlib.pyplot as plt
-import timeit
-import time
-from pynput import keyboard
-from skimage import util
+print(__doc__)
 
 
 # do not modify below
@@ -58,20 +59,18 @@ STEP = 100
 # width of plot window in sec
 WIDTH = 5
 
-_debug = False
+myformat = "%(asctime)s.%(msecs)03d %(levelname)s:\t%(message)s"
+logging.basicConfig(format=myformat,
+                    level=logging.INFO,
+                    datefmt="%H:%M:%S")
+# logging.getLogger().setLevel(logging.DEBUG)
 
 
 class Birdsong:
 
     def __init__(self):
-        """
-        :param a1: float
-            tuning frequency for a1
-        :param tuning: string
-            tuning temperament
-        """
-        # lengths of audio signal chunks
-        self.record_seconds = 1
+        self.record_seconds = 1  # lengths of audio signal chunks
+        self.visible = True
         self.rc = None
 
         self.callback_output = []
@@ -97,8 +96,8 @@ class Birdsong:
         return None, pyaudio.paContinue
 
     def on_activate_x(self):
-        print("continue with ESC")
         self.rc = 'x'
+        print("continue with ESC")
 
     def on_activate_y(self):
         self.stream.stop_stream()
@@ -114,10 +113,13 @@ class Birdsong:
             self.record_seconds = 0
         print("Recording Time: {0:1.1f}s".format(self.record_seconds))
 
+    def on_activate_v(self):
+        # toggles on/off the plot in the time domain
+        self.visible = not self.visible
+
     def on_activate_esc(self):
         self.rc = 'esc'
 
-    @property
     def animate(self):
         """
         While the stream is active audio output is created and piled up on variable amp such that WIDTH sec
@@ -144,7 +146,7 @@ class Birdsong:
                 self.stream.start_stream()
                 self.rc = None
 
-            print('Starting Audio Stream...')
+            logging.info('Starting Audio Stream...')
             time.sleep(self.record_seconds)
             # Convert the list of numpy-arrays into a 1D array (column-wise)
             # loop until callback_output is not not empty any more!
@@ -158,8 +160,7 @@ class Birdsong:
             self.callback_output = []
             amp = np.hstack((amp, chunk))
             samples = len(amp)
-            if _debug:
-                print('Number of samples', samples)
+            logging.debug('Number of samples:' + str(samples))
             rest = samples - WIDTH*RATE
             if rest > 0:
                 # cut off preceeding rest to result in 5 second windows
@@ -168,7 +169,7 @@ class Birdsong:
             L = amp.shape[0] / RATE
             # The resulting slices object contains one slice per row.
             slices = util.view_as_windows(amp, window_shape=(M,), step=STEP)
-            print(f'Audio shape: {amp.shape}, Sliced audio shape: {slices.shape}')
+            logging.debug(f'Audio shape: {amp.shape}, Sliced audio shape: {slices.shape}')
             t = np.arange(samples) / RATE
             t = t - max(t)  # offset along x-axis
 
@@ -181,8 +182,7 @@ class Birdsong:
             S = 20 * np.log10(S / np.max(S))
 
             _stop = timeit.default_timer()
-            if _debug:
-                print("time utilized for FFT [s]: " + str(_stop - _start))
+            logging.debug("time utilized for FFT [s]: " + str(_stop - _start))
 
             _start = timeit.default_timer()
 
@@ -236,11 +236,11 @@ class Birdsong:
                 # fill in the axes rectangle
                 fig.canvas.blit(ax.bbox)
                 fig.canvas.blit(ax1.bbox)
+            ax.set_visible(self.visible)
             fig.canvas.flush_events()
 
             _stop = timeit.default_timer()
-            if _debug:
-                print("time utilized for matplotlib [s]: " + str(_stop - _start))
+            logging.debug("time utilized for matplotlib [s]: " + str(_stop - _start))
 
         return
 
@@ -253,9 +253,10 @@ def main():
         '<ctrl>+y': a.on_activate_y,
         '<ctrl>+j': a.on_activate_j,
         '<ctrl>+k': a.on_activate_k,
+        '<ctrl>+v': a.on_activate_v,
         '<esc>': a.on_activate_esc})
     h.start()
-    a.animate
+    a.animate()
     plt.close('all')
 
     return 0
