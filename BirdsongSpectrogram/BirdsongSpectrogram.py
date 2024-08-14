@@ -182,8 +182,8 @@ class Birdsong:
             # rfft is faster than fft
             spectrum = np.fft.rfft(slices, axis=0)[1:M//2+1]
             spectrum = np.abs(spectrum)
-            S = np.abs(spectrum)
-            S = 20 * np.log10(S / np.max(S))
+            sp = np.abs(spectrum)
+            sp = 20 * np.log10(sp / np.max(sp))
 
             _stop = timeit.default_timer()
             logging.debug("time utilized for FFT [s]: " + str(_stop - _start))
@@ -200,7 +200,12 @@ class Birdsong:
                 # lower subplot
                 ax1 = fig.add_subplot(212)
                 ln, = ax.plot(t, amp)
-                image = ax1.imshow(S, origin='lower', cmap='viridis', extent=(-l, 0., 0., RATE / 2. / 1000.))
+                image = ax1.imshow(
+                    sp,
+                    origin='lower',
+                    cmap='viridis',
+                    extent=(-l, 0., 0., RATE / 2. / 1000.)
+                )
                 # set once as do not change
                 ax.set_xlim([-WIDTH, 0.])
                 ax.set_ylabel('Intensity/arb. units')
@@ -222,7 +227,7 @@ class Birdsong:
                 ln.set_xdata(t)
                 ln.set_ydata(amp)
                 # lower subplot
-                image.set_data(S)
+                image.set_data(sp)
                 image.set_extent((-l, 0., 0., RATE / 2. / 1000.))
                 # Rescale the axis so that the data can be seen in the plot
                 # if you know the bounds of your data you could just set this once
