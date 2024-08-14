@@ -114,7 +114,7 @@ class Birdsong:
         print("Recording Time: {0:1.1f}s".format(self.record_seconds))
 
     def on_activate_v(self):
-        # toggles on/off the plot in the time domain
+        # toggles on/off plot in time domain
         self.visible = not self.visible
 
     def on_activate_esc(self):
@@ -129,7 +129,9 @@ class Birdsong:
         string
             return code
         """
-        win = np.hanning(M + 1)[:-1]
+        ln, image, ax, ax1, fig, axbackground, ax1background = (
+            None, None, None, None, None, None, None)
+        win = np.hanning(M)
         _firstplot = True
         plt.ion()  # Stop matplotlib windows from blocking
 
@@ -146,10 +148,10 @@ class Birdsong:
                 self.stream.start_stream()
                 self.rc = None
 
-            logging.info('Starting Audio Stream...')
+            logging.debug('Starting Audio Stream...')
             time.sleep(self.record_seconds)
             # Convert the list of numpy-arrays into a 1D array (column-wise)
-            # loop until callback_output is not not empty any more!
+            # loop until callback_output is not empty anymore!
             while not self.callback_output:
                 pass
 
@@ -166,7 +168,7 @@ class Birdsong:
                 # cut off preceeding rest to result in 5 second windows
                 amp = amp[rest:]
                 samples = len(amp)
-            L = amp.shape[0] / RATE
+            l = amp.shape[0] / RATE
             # The resulting slices object contains one slice per row.
             slices = util.view_as_windows(amp, window_shape=(M,), step=STEP)
             logging.debug(f'Audio shape: {amp.shape}, Sliced audio shape: {slices.shape}')
@@ -176,7 +178,9 @@ class Birdsong:
             # Hanning apodization
             slices = slices * win
             slices = slices.T
-            spectrum = np.fft.fft(slices, axis=0)[:M // 2 + 1:-1]
+#            spectrum = np.fft.fft(slices, axis=0)[:M // 2 + 1:-1]
+            # rfft is faster than fft
+            spectrum = np.fft.rfft(slices, axis=0)[1:M//2+1]
             spectrum = np.abs(spectrum)
             S = np.abs(spectrum)
             S = 20 * np.log10(S / np.max(S))
@@ -196,7 +200,7 @@ class Birdsong:
                 # lower subplot
                 ax1 = fig.add_subplot(212)
                 ln, = ax.plot(t, amp)
-                image = ax1.imshow(S, origin='lower', cmap='viridis', extent=(-L, 0., 0., RATE / 2. / 1000.))
+                image = ax1.imshow(S, origin='lower', cmap='viridis', extent=(-l, 0., 0., RATE / 2. / 1000.))
                 # set once as do not change
                 ax.set_xlim([-WIDTH, 0.])
                 ax.set_ylabel('Intensity/arb. units')
@@ -219,7 +223,7 @@ class Birdsong:
                 ln.set_ydata(amp)
                 # lower subplot
                 image.set_data(S)
-                image.set_extent((-L, 0., 0., RATE / 2. / 1000.))
+                image.set_extent((-l, 0., 0., RATE / 2. / 1000.))
                 # Rescale the axis so that the data can be seen in the plot
                 # if you know the bounds of your data you could just set this once
                 # so that the axis don't keep changing
@@ -241,8 +245,6 @@ class Birdsong:
 
             _stop = timeit.default_timer()
             logging.debug("time utilized for matplotlib [s]: " + str(_stop - _start))
-
-        return
 
 
 def main():
