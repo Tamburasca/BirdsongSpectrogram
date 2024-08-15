@@ -69,9 +69,10 @@ logging.basicConfig(format=myformat,
 class Birdsong:
 
     def __init__(self):
-        self.record_seconds = 1  # lengths of audio signal chunks
-        self.visible = True
-        self.rc = None
+        self.record_seconds: float = 1  # lengths of audio signal chunks
+        self.visible: bool = True
+        self.x: bool = True
+        self.q: bool = False
 
         self.callback_output = []
         audio = pyaudio.PyAudio()
@@ -96,12 +97,12 @@ class Birdsong:
         return None, pyaudio.paContinue
 
     def on_activate_x(self):
-        self.rc = 'x'
-        print("continue with ESC")
+        self.x = not self.x
+        print("stop/resume with ctrl-x")
 
     def on_activate_y(self):
-        self.rc = 'esc'
-        self.stream.stop_stream()
+        self.x = True
+        self.q = True
         print("quitting...")
 
     def on_activate_k(self):
@@ -118,19 +119,22 @@ class Birdsong:
         # toggles on/off plot in time domain
         self.visible = not self.visible
 
-    def on_activate_esc(self):
-        self.rc = 'esc'
-
     def animate(self) -> None:
         """
         While the stream is active audio output is created and piled up on variable amp such that WIDTH sec
         are filled. The upper subplot displays the audio signal, whilst the lower displays the birdsong spectrogram.
         """
-        ln, image, ax, ax1, fig, axbackground, ax1background = (
-            None, None, None, None, None, None, None)
-        win = np.hanning(M)
+        ln, image, axbackground, ax1background = None, None, None, None
         _firstplot = True
+        win = np.hanning(M)
         plt.ion()  # Stop matplotlib windows from blocking
+        # Setup figure, axis, lines, text and initiate plot and copy background
+        fig = plt.gcf()
+        fig.set_size_inches(12, 8)
+        # upper subplot
+        ax = fig.add_subplot(211)
+        # lower subplot
+        ax1 = fig.add_subplot(212)
 
         # start Recording
         self.stream.start_stream()
@@ -138,12 +142,14 @@ class Birdsong:
 
         while self.stream.is_active():
             # interrupt on hotkey 'ctrl-x' and resume on 'esc'
-            if self.rc == 'x':
+            if not self.x:
                 self.stream.stop_stream()
-                while self.rc != 'esc':
+                while not self.x:
                     time.sleep(.01)
                 self.stream.start_stream()
-                self.rc = None
+            if self.q:
+                self.stream.stop_stream()
+                break
 
             logging.debug('Starting Audio Stream...')
             time.sleep(self.record_seconds)
@@ -173,12 +179,9 @@ class Birdsong:
             t = t - max(t)  # offset along x-axis
 
             # Hanning apodization
-            slices = slices * win
-            slices = slices.T
-#            spectrum = np.fft.fft(slices, axis=0)[:M // 2 + 1:-1]
+            slices = (slices * win).T
             # rfft is faster than fft
-            spectrum = np.fft.rfft(slices, axis=0)[1:M//2+1]
-            spectrum = np.abs(spectrum)
+            spectrum = np.abs(np.fft.rfft(slices, axis=0)[1:M//2+1])
             sp = np.abs(spectrum)
             sp = 20 * np.log10(sp / np.max(sp))
 
@@ -189,13 +192,6 @@ class Birdsong:
 
             # instantiate first plot and copy background
             if _firstplot:
-                # Setup figure, axis, lines, text and initiate plot and copy background
-                fig = plt.gcf()
-                fig.set_size_inches(12, 8)
-                # upper subplot
-                ax = fig.add_subplot(211)
-                # lower subplot
-                ax1 = fig.add_subplot(212)
                 ln, = ax.plot(t, amp)
                 image = ax1.imshow(
                     sp,
@@ -216,7 +212,6 @@ class Birdsong:
                 see also here: https://bastibe.de/2013-05-30-speeding-up-matplotlib.html
                 no idea whether this poses still validity
                 """
-#                fig.canvas.draw()
                 plt.pause(0.001)
                 _firstplot = False
             else:
@@ -250,15 +245,16 @@ class Birdsong:
 
 
 def main():
-
     a = Birdsong()
-    h = keyboard.GlobalHotKeys({
-        '<ctrl>+x': a.on_activate_x,
-        '<ctrl>+y': a.on_activate_y,
-        '<ctrl>+j': a.on_activate_j,
-        '<ctrl>+k': a.on_activate_k,
-        '<ctrl>+v': a.on_activate_v,
-        '<esc>': a.on_activate_esc})
+    h = keyboard.GlobalHotKeys(
+        {
+            '<ctrl>+x': a.on_activate_x,
+            '<ctrl>+y': a.on_activate_y,
+            '<ctrl>+j': a.on_activate_j,
+            '<ctrl>+k': a.on_activate_k,
+            '<ctrl>+v': a.on_activate_v
+        }
+    )
     h.start()
     a.animate()
     plt.close('all')
