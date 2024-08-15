@@ -4,7 +4,7 @@ Birdsong Spectrogram as derived from the audio signal with the spectrogram
 constantly being updated as the audio signal is streaming in. The update interval
 can be adjusted through hotkeys ctrl-j or ctrl-k. However, the low limit
 is determined by MATPLOTLIB to update the spectrogram. 
-ctrl-x and ctrl-y discontinue and exit the program,
+ctrl-x and ctrl-y discontinue and exit the stream,
 respectively, ESC to resume. The time
 series in the upper subplot can be toggled off/on by pressing ctrl-v.
 The sample rate, the sample width

@@ -100,6 +100,7 @@ class Birdsong:
         print("continue with ESC")
 
     def on_activate_y(self):
+        self.rc = 'esc'
         self.stream.stop_stream()
         print("quitting...")
 
