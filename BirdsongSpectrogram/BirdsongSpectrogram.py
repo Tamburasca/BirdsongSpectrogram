@@ -38,9 +38,9 @@ __author__ = "Dr. Ralf Antonius Timmermann"
 __copyright__ = "Copyright (C) Dr. Ralf Antonius Timmermann"
 __credits__ = ""
 __license__ = "GPLv3"
-__version__ = "0.3"
+__version__ = "0.4.0"
 __maintainer__ = "Dr. Ralf A. Timmermann"
-__email__ = "rtimmermann@astro.uni-bonn.de"
+__email__ = "ralf.timmermann@gmx.de"
 __status__ = "Production"
 
 print(__doc__)
@@ -120,14 +120,10 @@ class Birdsong:
     def on_activate_esc(self):
         self.rc = 'esc'
 
-    def animate(self):
+    def animate(self) -> None:
         """
         While the stream is active audio output is created and piled up on variable amp such that WIDTH sec
         are filled. The upper subplot displays the audio signal, whilst the lower displays the birdsong spectrogram.
-
-        :return:
-        string
-            return code
         """
         ln, image, ax, ax1, fig, axbackground, ax1background = (
             None, None, None, None, None, None, None)
