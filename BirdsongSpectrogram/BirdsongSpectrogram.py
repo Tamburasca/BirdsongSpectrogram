@@ -37,7 +37,7 @@ import logging
 __author__ = "Dr. Ralf Antonius Timmermann"
 __copyright__ = "Copyright (C) Dr. Ralf Antonius Timmermann"
 __credits__ = ""
-__license__ = "GPLv3"
+__license__ = "BSD 3-Clause"
 __version__ = "0.4.0"
 __maintainer__ = "Dr. Ralf A. Timmermann"
 __email__ = "ralf.timmermann@gmx.de"
@@ -66,7 +66,7 @@ logging.basicConfig(format=myformat,
 # logging.getLogger().setLevel(logging.DEBUG)
 
 
-class Birdsong:
+class Birdsong(object):
 
     def __init__(self):
         self.record_seconds: float = 1  # lengths of audio signal chunks
