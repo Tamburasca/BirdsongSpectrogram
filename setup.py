@@ -8,7 +8,7 @@ with open("requirements.txt", "r") as f:
 
 setuptools.setup(
     name="BirdsongSpectrogram",
-    version="0.4.0",
+    version="0.5.0",
     author="Ralf Antonius Timmermann",
     author_email="ralf.timmermann@gmx.de",
     description="Birdsong Spectrogramm",
@@ -21,7 +21,7 @@ setuptools.setup(
         "License :: OSI Approved :: BSD 3-Clause",
         "Operating System :: OS Independent",
     ],
-    python_requires='>=3.9',
+    python_requires='>=3.13',
     install_requires=dependencies,
     license='BSD 3-Clause',
 )

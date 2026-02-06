@@ -33,18 +33,16 @@ from pynput import keyboard
 from skimage import util
 import logging
 
-
 __author__ = "Dr. Ralf Antonius Timmermann"
 __copyright__ = "Copyright (C) Dr. Ralf Antonius Timmermann"
 __credits__ = ""
 __license__ = "BSD 3-Clause"
-__version__ = "0.4.0"
+__version__ = "0.5.0"
 __maintainer__ = "Dr. Ralf A. Timmermann"
 __email__ = "ralf.timmermann@gmx.de"
 __status__ = "Production"
 
 print(__doc__)
-
 
 # do not modify below
 FORMAT = pyaudio.paInt16
@@ -63,6 +61,8 @@ myformat = "%(asctime)s.%(msecs)03d %(levelname)s:\t%(message)s"
 logging.basicConfig(format=myformat,
                     level=logging.INFO,
                     datefmt="%H:%M:%S")
+
+
 # logging.getLogger().setLevel(logging.DEBUG)
 
 
@@ -130,6 +130,8 @@ class Birdsong(object):
         plt.ion()  # Stop matplotlib windows from blocking
         # Setup figure, axis, lines, text and initiate plot and copy background
         fig = plt.gcf()
+        fig.canvas.manager.set_window_title(
+            "Birdsong Spectrogram (c) Ralf A. Timmermann")
         fig.set_size_inches(12, 8)
         # upper subplot
         ax = fig.add_subplot(211)
@@ -138,7 +140,7 @@ class Birdsong(object):
 
         # start Recording
         self.stream.start_stream()
-        amp = []
+        amp = list()
 
         while self.stream.is_active():
             # interrupt on hotkey 'ctrl-x' and resume on 'esc'
@@ -162,11 +164,11 @@ class Birdsong(object):
 
             chunk = np.hstack(self.callback_output)
             # clear stream and pile up on amp
-            self.callback_output = []
+            self.callback_output = list()
             amp = np.hstack((amp, chunk))
             samples = len(amp)
             logging.debug('Number of samples:' + str(samples))
-            rest = samples - WIDTH*RATE
+            rest = samples - WIDTH * RATE
             if rest > 0:
                 # cut off preceeding rest to result in 5 second windows
                 amp = amp[rest:]
@@ -181,7 +183,7 @@ class Birdsong(object):
             # Hanning apodization
             slices = (slices * win).T
             # rfft is faster than fft
-            spectrum = np.abs(np.fft.rfft(slices, axis=0)[1:M//2+1])
+            spectrum = np.abs(np.fft.rfft(slices, axis=0)[1:M // 2 + 1])
             sp = np.abs(spectrum)
             sp = 20 * np.log10(sp / np.max(sp))
 
@@ -200,10 +202,10 @@ class Birdsong(object):
                     extent=(-l, 0., 0., RATE / 2. / 1000.)
                 )
                 # set once as do not change
-                ax.set_xlim([-WIDTH, 0.])
+                ax.set_xlim((-WIDTH, 0.))
                 ax.set_ylabel('Intensity/arb. units')
                 ax1.set_aspect('auto')
-                ax1.set_xlim([-WIDTH, 0.])
+                ax1.set_xlim((-WIDTH, 0.))
                 ax1.set_xlabel('Time/s')
                 ax1.set_ylabel('Frequency/kHz')
                 axbackground = fig.canvas.copy_from_bbox(ax.bbox)
